@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 3929581}
   - component: {fileID: 3929580}
   - component: {fileID: 3929579}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -607,12 +607,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 6
   orientation: {fileID: 829634026}
-  jumpForce: 50
-  floorCheckDistance: 1
+  jumpForce: 5
+  floorCheckDistance: 1.1
   gravity: -10
   floorMask:
     serializedVersion: 2
     m_Bits: 8
+  verticalVelocity: 0
+  floor: 0
 --- !u!136 &676286842
 CapsuleCollider:
   m_ObjectHideFlags: 0
