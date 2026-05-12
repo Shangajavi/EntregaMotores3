@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -13,11 +12,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float floorCheckDistance = 1f;
     [SerializeField] private float gravity = -10f;
     [SerializeField] private LayerMask floorMask;
-    private bool hasJustJumped = false;
+    [SerializeField] private float verticalVelocity;
 
     private CharacterController controller;
+    [SerializeField]private bool floor;
     private Vector2 input;
-    private float verticalVelocity;
 
     private void Awake()
     {
@@ -26,11 +25,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-            InputManager.Instance.OnJumpInitiated += Jump;
+        InputManager.Instance.OnJumpInitiated += Jump;
     }
 
     private void Update()
     {
+        
         if (InputManager.Instance != null)
         {
             input = InputManager.Instance.GetMovement();
@@ -39,34 +39,39 @@ public class PlayerMovement : MonoBehaviour
         {
             input = Vector2.zero;
         }
-
+        floor = IsGrounded();
         Vector3 move = orientation.right * input.x + orientation.forward * input.y;
-
         move *= moveSpeed;
 
-        if (IsGrounded())
+        if (floor)
         {
             if (verticalVelocity < 0f)
             {
-                verticalVelocity = -2f;
+                verticalVelocity = 0.01f;
             }
-     
+        }
+        else
+        {
+            verticalVelocity += gravity * Time.deltaTime;
         }
 
-        verticalVelocity += gravity * Time.deltaTime;
-
-        Vector3 finalMove = move;
-        finalMove.y = verticalVelocity;
-
-        controller.Move(finalMove * Time.deltaTime);
+        move.y = verticalVelocity;
+        controller.Move(move * Time.deltaTime);
     }
 
     private void Jump()
     {
+        Debug.DrawLine(orientation.position, orientation.position + Vector3.down * floorCheckDistance, Color.red, 0.2f);
+        if (!floor)
+        {
+            return;
+        }
 
-            Debug.DrawLine(orientation.position, Vector3.down, Color.red);
-            verticalVelocity += jumpForce;
-        
+        if (floor)
+        {
+            Debug.Log("JUMP EVENT");
+            verticalVelocity = jumpForce;
+        }
     }
 
     private void OnDisable()
@@ -82,6 +87,3 @@ public class PlayerMovement : MonoBehaviour
         return Physics.Raycast(orientation.position, Vector3.down, floorCheckDistance, floorMask);
     }
 }
-
-
-
